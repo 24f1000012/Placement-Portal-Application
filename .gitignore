@@ -1,5 +1,45 @@
+# Virtual Environment
 venv/
+env/
+ENV/
+
+# Python cache
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+.Python
+
+# Database
 instance/
+*.db
+*.sqlite
+*.sqlite3
+
+# Environment variables
 .env
+.env.local
+
+# Uploads (student resumes)
+static/uploads/*
+!static/uploads/.gitkeep
+
+# IDE specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Flask stuff
+*.log
+flask_session/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
