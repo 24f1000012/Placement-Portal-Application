@@ -40,7 +40,7 @@ class Student(db.Model):
 
     # Relationships
     applications = db.relationship('Application', backref='student', lazy=True)
-
+    placements    = db.relationship('Placement', backref='student', lazy=True)
 
 # ─────────────────────────────────────────
 # COMPANY TABLE
@@ -59,8 +59,8 @@ class Company(db.Model):
     is_blacklisted  = db.Column(db.Boolean, default=False)
 
     # Relationships
-    drives = db.relationship('PlacementDrive', backref='company', lazy=True)
-
+    drives       = db.relationship('PlacementDrive', backref='company', lazy=True)
+    placements    = db.relationship('Placement', backref='company', lazy=True)
 
 # ─────────────────────────────────────────
 # PLACEMENT DRIVE TABLE (Job Postings)
@@ -82,7 +82,7 @@ class PlacementDrive(db.Model):
 
     # Relationships
     applications = db.relationship('Application', backref='drive', lazy=True)
-
+    placements    = db.relationship('Placement', backref='drive', lazy=True)
 
 # ─────────────────────────────────────────
 # APPLICATION TABLE
@@ -102,19 +102,22 @@ class Application(db.Model):
         db.UniqueConstraint('student_id', 'drive_id', name='unique_application'),
     )
 
-class Placement(db.Model):
-    _tablename_='placement'
-
-    id=db.Column(db.Integer,primary_key=True)
-    student_id=db.Column(db.Integer,db.ForeignKey('student.id'),nullable=False)
-    company_id=db.Column(db.Integer,db.ForeignKey('company.id'),nullable=False)
-    drive_id=db.Column(db.Integer,db.ForeignKey('placement_drive.id'),nullable=False)
-    application_id=db.Column(db.Integer,db.ForeignKey('application.id'),nullable=False)
-    join_date=db.Column(db.DateTime,default=datetime.utcnow)
-    salary=db.Column(db.String(100))
-    position=db.Column(db.String(100))
-    placemnet_date=db.Column(db.DateTime,default=datetime.utcnow)
-    offer_letter=db.Column(db.String(200))   # file path
-
     # Relationships
-    student=db.relationship('Student')
+    placement = db.relationship('Placement', backref='application', uselist=False)
+
+class Placement(db.Model):
+    __tablename__='placement'
+
+    id              =db.Column(db.Integer,primary_key=True)
+    student_id      =db.Column(db.Integer,db.ForeignKey('student.id'),nullable=False)
+    company_id      =db.Column(db.Integer,db.ForeignKey('company.id'),nullable=False)
+    drive_id        =db.Column(db.Integer,db.ForeignKey('placement_drive.id'),nullable=False)
+    application_id  =db.Column(db.Integer,db.ForeignKey('application.id'),nullable=False, unique=True)
+    joining_date       =db.Column(db.DateTime,default=datetime.utcnow)
+    salary          =db.Column(db.String(100))
+    position        =db.Column(db.String(100))
+    placement_date  =db.Column(db.DateTime,default=datetime.utcnow)
+    offer_letter    =db.Column(db.String(200))   # file path
+
+    
+    
