@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Companies</title>
+    <style>
+        /* Add minimal styling */
+        body { font-family: Arial; padding: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background: #667eea; color: white; }
+        .badge { padding: 5px 10px; border-radius: 3px; color: white; }
+        .badge-success { background: #28a745; }
+        .badge-danger { background: #dc3545; }
+        .badge-warning { background: #ffc107; color: #333; }
+        .btn { padding: 5px 15px; border: none; border-radius: 3px; cursor: pointer; color: white; }
+        .btn-success { background: #28a745; }
+        .btn-danger { background: #dc3545; }
+    </style>
+</head>
+<body>
+    <h2>Manage Companies</h2>
+    <a href="{{ url_for('admin.dashboard') }}">← Back to Dashboard</a>
+    
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div style="padding: 10px; margin: 10px 0; background: #d4edda; border: 1px solid #c3e6cb;">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Company Name</th>
+                <th>Industry</th>
+                <th>HR Contact</th>
+                <th>Website</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for company in companies %}
+            <tr>
+                <td>{{ company.id }}</td>
+                <td>{{ company.name }}</td>
+                <td>{{ company.industry or "N/A" }}</td>
+                <td>{{ company.hr_contact or "N/A" }}</td>
+                <td>
+                    {% if company.website %}
+                        <a href="{{ company.website }}" target="_blank">Visit</a>
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </td>
+                <td>
+                    {% if company.approval_status == "approved" %}
+                        <span class="badge badge-success">Approved</span>
+                    {% elif company.approval_status == "rejected" %}
+                        <span class="badge badge-danger">Rejected</span>
+                    {% else %}
+                        <span class="badge badge-warning">Pending</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if company.approval_status == "pending" %}
+                        <!-- APPROVE -->
+                        <form method="POST" action="{{ url_for('admin.approveCompany', company_id=company.id) }}" style="display:inline;">
+                            <button class="btn btn-success">Approve</button>
+                        </form>
+                        
+                        <!-- REJECT -->
+                        <form method="POST" action="{{ url_for('admin.rejectCompany', company_id=company.id) }}" style="display:inline;">
+                            <button class="btn btn-danger">Reject</button>
+                        </form>
+                    {% else %}
+                        <span style="color: #999;">No Actions</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="7" style="text-align: center;">No companies registered yet</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

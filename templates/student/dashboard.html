@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - Placement Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .navbar h1 {
+            font-size: 24px;
+        }
+        
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            padding: 10px 15px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 5px;
+        }
+        
+        .navbar a:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+        
+        .welcome {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .welcome h2 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .card h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .card-number {
+            font-size: 32px;
+            color: #764ba2;
+            margin: 10px 0;
+        }
+        
+        .card a {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            margin-top: 10px;
+        }
+        
+        .card a:hover {
+            background: #5568d3;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>👨‍🎓 Student Dashboard</h1>
+        <div>
+            <a href="{{ url_for('auth.logout') }}">Logout</a>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="welcome">
+            <h2>Welcome to Student Dashboard</h2>
+            <p>Browse jobs, apply to companies and track placements.</p>
+        </div>
+        
+        <div class="dashboard-cards">
+            <div class="card">
+                <h3>Available Jobs</h3>
+                <div class="card-number">0</div>
+                <a href="#">Browse Jobs</a>
+            </div>
+            
+            <div class="card">
+                <h3>My Applications</h3>
+                <div class="card-number">0</div>
+                <a href="#">View Applications</a>
+            </div>
+            
+            <div class="card">
+                <h3>My Profile</h3>
+                <div class="card-number">👤</div>
+                <a href="#">Edit Profile</a>
+            </div>
+            
+            <div class="card">
+                <h3>Placement Status</h3>
+                <div class="card-number">0</div>
+                <a href="#">View Status</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
