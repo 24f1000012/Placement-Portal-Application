@@ -110,8 +110,19 @@
     </div>
     
     <div class="container">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div style="padding: 10px; margin: 10px 0; background: #d4edda; border: 1px solid #c3e6cb; border-radius: 5px;">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
         <div class="welcome">
-            <h2>Welcome to Company Dashboard</h2>
+            <h2>Welcome, {{ company.name }}!</h2>
             <p>Post jobs, manage applications and placements.</p>
         </div>
         
@@ -119,25 +130,25 @@
             <div class="card">
                 <h3>Post New Job</h3>
                 <div class="card-number">📝</div>
-                <a href="#">Create Job Posting</a>
+                <a href="{{ url_for('company.create_drive') }}">Create Job Posting</a>
             </div>
             
             <div class="card">
-                <h3>Active Drives</h3>
-                <div class="card-number">0</div>
-                <a href="#">View Drives</a>
+                <h3>Your Drives</h3>
+                <div class="card-number">{{ stats.total_drives if stats else 0 }}</div>
+                <a href="{{ url_for('company.view_drives') }}">View Drives</a>
+            </div>
+            
+            <div class="card">
+                <h3>Pending Approval</h3>
+                <div class="card-number">{{ stats.pending_drives if stats else 0 }}</div>
+                <a href="{{ url_for('company.view_drives') }}">Check Status</a>
             </div>
             
             <div class="card">
                 <h3>Applications</h3>
-                <div class="card-number">0</div>
+                <div class="card-number">{{ stats.total_applications if stats else 0 }}</div>
                 <a href="#">Review Applications</a>
-            </div>
-            
-            <div class="card">
-                <h3>Placements</h3>
-                <div class="card-number">0</div>
-                <a href="#">View Placements</a>
             </div>
         </div>
     </div>

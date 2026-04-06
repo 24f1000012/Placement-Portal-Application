@@ -2,6 +2,9 @@ from flask import Flask, render_template
 from config import Config
 from models import db
 from services.auth_service import AuthService  # ← Import service
+from routes.company import company_bp
+from routes.admin import admin_bp
+from routes.student import student_bp
 
 def create_app():
     app = Flask(__name__)

@@ -134,7 +134,7 @@
             <div class="card">
                 <h3>Active Students</h3>
                 <div class="card-number">{{ stats.total_students if stats else 0 }}</div>
-                <a href="#">View Students</a>
+                <a href="{{ url_for('admin.showStudents') }}">View Students</a>
             </div>
             
             <div class="card">
@@ -144,9 +144,20 @@
             </div>
             
             <div class="card">
-                <h3>Placement Drives</h3>
-                <div class="card-number">0</div>
-                <a href="#">Manage Drives</a>
+                <h3>Pending Drives</h3>
+                <div class="card-number">{{ stats.pending_drives if stats else 0 }}</div>
+                <a href="{{ url_for('admin.showDrives', status='pending') }}">Review Drives</a>
+            </div>
+            
+            <div class="card">
+                <h3>All Drives</h3>
+                <div class="card-number">{{ stats.total_drives if stats else 0 }}</div>
+                <a href="{{ url_for('admin.showDrives') }}">Manage Drives</a>
+            </div>
+            <div class="card">
+                <h3>Appliactions</h3>
+                <div class="card-number">{{ stats.total_applications if stats else 0 }}</div>
+                <a href="#">Manage Applications</a>
             </div>
         </div>
     </div>

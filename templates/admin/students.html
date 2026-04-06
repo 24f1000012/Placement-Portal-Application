@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Companies</title>
+    <style>
+        /* Add minimal styling */
+        body { font-family: Arial; padding: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background: #667eea; color: white; }
+        .badge { padding: 5px 10px; border-radius: 3px; color: white; }
+        .badge-success { background: #28a745; }
+        .badge-danger { background: #dc3545; }
+        .badge-warning { background: #ffc107; color: #333; }
+        .btn { padding: 5px 15px; border: none; border-radius: 3px; cursor: pointer; color: white; }
+        .btn-success { background: #28a745; }
+        .btn-danger { background: #dc3545; }
+    </style>
+</head>
+<body>
+    <h2>Manage Students</h2>
+    <a href="{{ url_for('admin.dashboard') }}">← Back to Dashboard</a>
+    
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div style="padding: 10px; margin: 10px 0; background: #d4edda; border: 1px solid #c3e6cb;">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Student Name</th>
+                <th>Roll Number</th>
+                <th>Phone</th>
+                <th>Department</th>
+                <th>CGPA</th>
+                <th>Resume</th>
+                <th>is_blacklisted</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in students %}
+            <tr>
+                <td>{{ student.id }}</td>
+                <td>{{ student.name }}</td>
+                <td>{{ student.roll_number or "N/A" }}</td>
+                <td>{{ student.phone or "N/A" }}</td>
+                <td>{{ student.department or "N/A" }}</td>
+                <td>{{ student.cgpa or "N/A" }}</td>
+                <td>
+                    {% if student.resume_url %}
+                        <a href="{{ student.resume_url }}" target="_blank">View Resume</a>
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </td>
+                <td>
+                    {% if student.is_blacklisted %}
+                        <span class="badge badge-danger">Blacklisted</span>
+                    {% else %}
+                        <span class="badge badge-success">Active</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if student.is_blacklisted == False %}
+                        <form method="POST" action="{{ url_for('admin.blacklistStudent', student_id=student.id) }}" style="display:inline;">
+                                <button class="btn btn-danger">Blacklist</button>
+                        </form>
+                    {% else %}
+                        <form method="POST" action="{{ url_for('admin.unblacklistStudent', student_id=student.id) }}" style="display:inline;">
+                                <button class="btn btn-success">Unblacklist</button>
+                        </form>
+                    {% endif %}
+
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="8" style="text-align: center;">No students found</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
+                           
