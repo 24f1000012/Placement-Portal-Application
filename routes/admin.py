@@ -14,7 +14,27 @@ def dashboard():
 @admin_bp.route('/companies')  
 @admin_required
 def showCompanies():
-    companies = AdminService.get_all_companies()
+    search_type = request.args.get('search_type')
+    search_query = request.args.get('search_query')
+    
+    companies = []
+    
+    if search_query:
+        # Search based on type
+        if search_type == 'name':
+            success, result = AdminService.get_company_by_name(search_query)
+            companies = result if success else []
+        elif search_type == 'industry':
+            success, result = AdminService.get_company_by_industry(search_query)
+            # get_company_by_industry returns a list already
+            companies = result if success else []
+        
+        if not companies:
+            flash(f'No companies found for "{search_query}"', 'warning')
+    else:
+        # No search - show all companies
+        companies = AdminService.get_all_companies()
+    
     return render_template("admin/companies.html", companies=companies)
 
 @admin_bp.route("/company/<int:company_id>/approve", methods=['POST'])  
@@ -34,7 +54,23 @@ def rejectCompany(company_id):
 @admin_bp.route('/students')  
 @admin_required
 def showStudents():
-    students=AdminService.get_all_students()
+    search_type = request.args.get('search_type')
+    search_query = request.args.get('search_query')
+    students = []
+    if search_query:
+        if search_type == 'name':
+            success, result = AdminService.get_student_by_name(search_query)
+            students = result if success else []
+        elif search_type == 'roll':
+            success, result = AdminService.get_student_by_roll(search_query)
+            students = [result] if success else []
+        elif search_type == 'contact':
+            success, result = AdminService.get_student_by_contact(search_query)
+            students = [result] if success else []
+        if not students:
+            flash(f'No students found for "{search_query}"', 'warning')
+    else:
+        students = AdminService.get_all_students()
     return render_template("admin/students.html", students=students)
 
 @admin_bp.route('/students/<int:student_id>/blacklist', methods=['POST'])  

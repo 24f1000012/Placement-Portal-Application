@@ -22,6 +22,26 @@
     <h2>Manage Companies</h2>
     <a href="{{ url_for('admin.dashboard') }}">← Back to Dashboard</a>
     
+    <div style="background: white; padding: 20px; margin: 20px 0; border-radius: 5px;">
+        <h3>Search Companies</h3>
+        <form method="GET" action="{{ url_for('admin.showCompanies') }}" style="display: flex; gap: 10px; align-items: end;">
+            <div style="flex: 1;">
+                <label>Search By:</label>
+                <select name="search_type" style="width: 100%; padding: 8px;">
+                    <option value="name">Company Name</option>
+                    <option value="industry">Industry</option>
+                </select>
+            </div>
+            <div style="flex: 2;">
+                <label>Search Term:</label>
+                <input type="text" name="search_query" placeholder="Enter search term..." style="width: 100%; padding: 8px;">
+            </div>
+            <div>
+                <button type="submit" class="btn btn-success" style="padding: 8px 20px;">Search</button>
+                <a href="{{ url_for('admin.showCompanies') }}" class="btn" style="padding: 8px 20px; background: #6c757d;">Clear</a>
+            </div>
+        </form>
+    </div>
     <!-- Flash Messages -->
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}

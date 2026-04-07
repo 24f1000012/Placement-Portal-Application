@@ -14,7 +14,7 @@ class AdminService:
     @staticmethod
     def get_company_by_name(name):
         """Get company by name"""
-        company = Company.query.filter_by(name=name).first()  # ← Added .first()
+        company = Company.query.filter_by(name=name).all()  # ← Added .first()
         if not company:
             return False, "Company not found"
         return True, company
@@ -94,7 +94,7 @@ class AdminService:
     @staticmethod
     def get_student_by_name(name):
         """Get student by name"""
-        student = Student.query.filter_by(name=name).first()  # ← Already correct
+        student = Student.query.filter_by(name=name).all()  # ← Already correct
         if not student:
             return False, "Student not found"
         return True, student
