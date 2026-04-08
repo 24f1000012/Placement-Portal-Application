@@ -139,17 +139,6 @@
                 <a href="{{ url_for('company.view_drives') }}">View Drives</a>
             </div>
             
-            <div class="card">
-                <h3>Pending Approval</h3>
-                <div class="card-number">{{ stats.pending_drives if stats else 0 }}</div>
-                <a href="{{ url_for('company.view_drives') }}">Check Status</a>
-            </div>
-            
-            <div class="card">
-                <h3>Applications</h3>
-                <div class="card-number">{{ stats.total_applications if stats else 0 }}</div>
-                <a href="#">Review Applications</a>
-            </div>
         </div>
     </div>
 </body>

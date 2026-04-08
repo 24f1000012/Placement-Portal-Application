@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Placement Drives</title>
+    <style>
+        body { font-family: Arial; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 1400px; margin: 0 auto; }
+        h2 { color: #667eea; }
+        .back-link { color: #667eea; text-decoration: none; margin-bottom: 20px; display: inline-block; }
+        .filter-tabs { margin: 20px 0; }
+        .filter-tabs a { 
+            padding: 10px 20px; 
+            margin-right: 10px; 
+            background: #f0f0f0; 
+            text-decoration: none; 
+            color: #333; 
+            border-radius: 5px; 
+        }
+        .filter-tabs a.active { background: #667eea; color: white; }
+        table { width: 100%; border-collapse: collapse; background: white; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background: #667eea; color: white; }
+        .badge { padding: 5px 10px; border-radius: 3px; color: white; font-size: 12px; }
+        .badge-success { background: #28a745; }
+        .badge-danger { background: #dc3545; }
+        .badge-warning { background: #ffc107; color: #333; }
+        .badge-secondary { background: #6c757d; }
+        .btn { padding: 5px 15px; border: none; border-radius: 3px; cursor: pointer; color: white; font-size: 12px; }
+        .btn-success { background: #28a745; }
+        .btn-danger { background: #dc3545; }
+        .alert { padding: 10px; margin: 10px 0; background: #d4edda; border: 1px solid #c3e6cb; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="{{ url_for('company.dashboard') }}" class="back-link">← Back to Dashboard</a>
+        
+        <h2>Manage Drives</h2>
+        
+        <!-- Filter Tabs -->
+        <div class="filter-tabs">
+            <a href="{{ url_for('company.view_drives') }}" class="{% if not request.args.get('status') %}active{% endif %}">All Drives</a>
+            <a href="{{ url_for('company.view_drives', status='pending') }}" class="{% if request.args.get('status') == 'pending' %}active{% endif %}">Pending</a>
+            <a href="{{ url_for('company.view_drives', status='approved') }}" class="{% if request.args.get('status') == 'approved' %}active{% endif %}">Approved</a>
+            <a href="{{ url_for('company.view_drives', status='rejected') }}" class="{% if request.args.get('status') == 'rejected' %}active{% endif %}">Rejected</a>
+            <a href="{{ url_for('company.view_drives', status='closed') }}" class="{% if request.args.get('status') == 'closed' %}active{% endif %}">Closed</a>
+        </div>
+        
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Job Title</th>
+                    <th>Salary</th>
+                    <th>Location</th>
+                    <th>Deadline</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                    <th>Applications</th>
+                    <th>Shortlisted Applications</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for drive in drives %}
+                <tr>
+                    <td>{{ drive.id }}</td>
+                    <td>
+                        <strong>{{ drive.job_title }}</strong><br>
+                        <small style="color: #666;">{{ drive.job_description[:100] }}{% if drive.job_description|length > 100 %}...{% endif %}</small>
+                    </td>
+                    <td>{{ drive.salary or "N/A" }}</td>
+                    <td>{{ drive.location or "N/A" }}</td>
+                    <td>
+                        {% if drive.application_deadline %}
+                            {{ drive.application_deadline.strftime('%Y-%m-%d') }}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if drive.status == "approved" %}
+                            <span class="badge badge-success">Approved</span>
+                        {% elif drive.status == "rejected" %}
+                            <span class="badge badge-danger">Rejected</span>
+                        {% elif drive.status == "Closed" %}
+                            <span class="badge badge-secondary">Closed</span>
+                        {% else %}
+                            <span class="badge badge-warning">Pending</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if drive.status != "Closed" %}
+                            <!-- Approve Button -->
+                            <form method="POST" action="{{ url_for('company.closeDrive', drive_id=drive.id) }}" style="display:inline;">
+                                <button class="btn btn-success">CLOSE</button>
+                            </form>
+                        {% else %}
+                            <span style="color: #999;">No actions</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <button class="btn btn-success">
+                            <a href="{{ url_for('company.view_applications', drive_id=drive.id) }}">Review Applications</a>
+                        </button>
+                    </td>
+                    <td>
+                        <button class="btn btn-warning">
+                            <a href="{{ url_for('company.view_applications', drive_id=drive.id, status='shortlisted') }}">Shortlisted</a>
+                        </button>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="8" style="text-align: center; padding: 30px;">
+                        No placement drives found
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

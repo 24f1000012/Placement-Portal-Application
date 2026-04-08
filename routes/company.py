@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
+from models import Application, PlacementDrive
 from utils.decorators import company_required
 from services.company_service import CompanyService
 from datetime import datetime
@@ -65,3 +66,49 @@ def view_drives():
     drives = CompanyService.get_company_drives(company.id)
     
     return render_template('company/drives.html', drives=drives, company=company)
+
+@company_bp.route('/drive/<int:drive_id>/close', methods=['POST'])  
+@company_required
+def closeDrive(drive_id):
+    """Close a placement drive"""
+    success, message = CompanyService.close_drive(drive_id)
+    flash(message, 'success' if success else 'danger')
+    return redirect(url_for("company.view_drives"))
+
+@company_bp.route('/drive/<int:drive_id>/applications')
+@company_required
+def view_applications(drive_id):
+    user_id = session.get('user_id')
+    company = CompanyService.get_company_by_user_id(user_id)
+    
+    # Get the drive (verify it belongs to this company)
+    drive = PlacementDrive.query.get(drive_id)
+    
+    if not drive or drive.company_id != company.id:
+        flash('Drive not found', 'danger')
+        return redirect(url_for('company.dashboard'))
+    
+    # Get status filter from query params
+    status_filter = request.args.get('status')
+    
+    # Get all applications or filter by status
+    if status_filter:
+        applications = CompanyService.get_drive_applications_by_status(drive_id, status_filter)
+    else:
+        applications = CompanyService.get_drive_applications(drive_id)
+    
+    return render_template('company/applications.html', drive=drive, applications=applications)
+
+@company_bp.route('/application/<int:app_id>/update_status', methods=['POST'])
+@company_required
+def update_application_status(app_id):
+    new_status = request.form.get('status')  # 'shortlisted', 'selected', 'rejected'
+    
+    success, message = CompanyService.update_application_status(app_id, new_status)
+    flash(message, 'success' if success else 'danger')
+    
+    # Redirect back to applications list
+    application = Application.query.get(app_id)
+    return redirect(url_for('company.view_applications', drive_id=application.drive_id))
+
+    

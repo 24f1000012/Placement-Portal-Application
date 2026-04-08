@@ -193,6 +193,6 @@ class AdminService:
         if not drive:
             return False, "Drive not found"
         
-        drive.status = 'closed'
+        drive.status = 'Closed'
         db.session.commit()
         return True, f"Drive '{drive.job_title}' closed"

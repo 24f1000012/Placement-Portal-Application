@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Review Applications</title>
+    <style>
+        body { font-family: Arial; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 1400px; margin: 0 auto; }
+        h2 { color: #667eea; }
+        .back-link { color: #667eea; text-decoration: none; margin-bottom: 20px; display: inline-block; }
+        .drive-info { background: white; padding: 20px; margin: 20px 0; border-radius: 5px; }
+        .filter-tabs { margin: 20px 0; }
+        .filter-tabs a { 
+            padding: 10px 20px; 
+            margin-right: 10px; 
+            background: #f0f0f0; 
+            text-decoration: none; 
+            color: #333; 
+            border-radius: 5px; 
+        }
+        .filter-tabs a.active { background: #667eea; color: white; }
+        table { width: 100%; border-collapse: collapse; background: white; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background: #667eea; color: white; }
+        .badge { padding: 5px 10px; border-radius: 3px; color: white; font-size: 12px; }
+        .badge-applied { background: #6c757d; }
+        .badge-shortlisted { background: #ffc107; color: #333; }
+        .badge-selected { background: #28a745; }
+        .badge-rejected { background: #dc3545; }
+        .btn { padding: 5px 15px; border: none; border-radius: 3px; cursor: pointer; color: white; font-size: 12px; margin: 2px; }
+        .btn-primary { background: #007bff; }
+        .btn-warning { background: #ffc107; color: #333; }
+        .btn-success { background: #28a745; }
+        .btn-danger { background: #dc3545; }
+        .alert { padding: 10px; margin: 10px 0; background: #d4edda; border: 1px solid #c3e6cb; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="{{ url_for('company.view_drives') }}" class="back-link">← Back to Drives</a>
+        
+        <h2>Applications for: {{ drive.job_title }}</h2>
+        
+        <!-- Drive Info -->
+        <div class="drive-info">
+            <strong>Company:</strong> {{ drive.company.name }}<br>
+            <strong>Location:</strong> {{ drive.location or 'N/A' }}<br>
+            <strong>Salary:</strong> {{ drive.salary or 'N/A' }}<br>
+            <strong>Total Applications:</strong> {{ drive.applications|length }}
+        </div>
+        
+        <!-- Filter Tabs -->
+        <div class="filter-tabs">
+            <a href="{{ url_for('company.view_applications', drive_id=drive.id) }}" 
+               class="{% if not request.args.get('status') %}active{% endif %}">
+               All ({{ drive.applications|length }})
+            </a>
+            <a href="{{ url_for('company.view_applications', drive_id=drive.id, status='applied') }}" 
+               class="{% if request.args.get('status') == 'applied' %}active{% endif %}">
+               Applied
+            </a>
+            <a href="{{ url_for('company.view_applications', drive_id=drive.id, status='shortlisted') }}" 
+               class="{% if request.args.get('status') == 'shortlisted' %}active{% endif %}">
+               Shortlisted
+            </a>
+            <a href="{{ url_for('company.view_applications', drive_id=drive.id, status='selected') }}" 
+               class="{% if request.args.get('status') == 'selected' %}active{% endif %}">
+               Selected
+            </a>
+            <a href="{{ url_for('company.view_applications', drive_id=drive.id, status='rejected') }}" 
+               class="{% if request.args.get('status') == 'rejected' %}active{% endif %}">
+               Rejected
+            </a>
+        </div>
+        
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <!-- Applications Table -->
+        <table>
+            <thead>
+                <tr>
+                    <th>Student Name</th>
+                    <th>Roll Number</th>
+                    <th>Department</th>
+                    <th>CGPA</th>
+                    <th>Skills</th>
+                    <th>Applied Date</th>
+                    <th>Resume</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for application in applications %}
+                <tr>
+                    <td>{{ application.student.name }}</td>
+                    <td>{{ application.student.roll_number or 'N/A' }}</td>
+                    <td>{{ application.student.department or 'N/A' }}</td>
+                    <td>{{ application.student.cgpa or 'N/A' }}</td>
+                    <td>
+                        {% if application.student.skills %}
+                            {{ application.student.skills[:50] }}{% if application.student.skills|length > 50 %}...{% endif %}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </td>
+                    <td>{{ application.applied_date.strftime('%Y-%m-%d') }}</td>
+                    <td>
+                        {% if application.student.resume %}
+                            <a href="/{{ application.student.resume }}" target="_blank" class="btn btn-primary">View Resume</a>
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if application.status == 'applied' %}
+                            <span class="badge badge-applied">Applied</span>
+                        {% elif application.status == 'shortlisted' %}
+                            <span class="badge badge-shortlisted">Shortlisted</span>
+                        {% elif application.status == 'selected' %}
+                            <span class="badge badge-selected">Selected</span>
+                        {% elif application.status == 'rejected' %}
+                            <span class="badge badge-rejected">Rejected</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if application.status == 'applied' %}
+                            <!-- From Applied: Can Shortlist or Reject -->
+                            <form method="POST" action="{{ url_for('company.update_application_status', app_id=application.id) }}" style="display:inline;">
+                                <input type="hidden" name="status" value="shortlisted">
+                                <button class="btn btn-warning">Shortlist</button>
+                            </form>
+                            <form method="POST" action="{{ url_for('company.update_application_status', app_id=application.id) }}" style="display:inline;">
+                                <input type="hidden" name="status" value="rejected">
+                                <button class="btn btn-danger">Reject</button>
+                            </form>
+                        {% elif application.status == 'shortlisted' %}
+                            <!-- From Shortlisted: Can Select or Reject -->
+                            <form method="POST" action="{{ url_for('company.update_application_status', app_id=application.id) }}" style="display:inline;">
+                                <input type="hidden" name="status" value="selected">
+                                <button class="btn btn-success">Select</button>
+                            </form>
+                            <form method="POST" action="{{ url_for('company.update_application_status', app_id=application.id) }}" style="display:inline;">
+                                <input type="hidden" name="status" value="rejected">
+                                <button class="btn btn-danger">Reject</button>
+                            </form>
+                        {% else %}
+                            <span style="color: #999;">No actions</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="9" style="text-align: center; padding: 30px;">
+                        No applications found
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

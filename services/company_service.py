@@ -67,3 +67,49 @@ class CompanyService:
     def get_company_drives(company_id):
         """Get all drives created by a company"""
         return PlacementDrive.query.filter_by(company_id=company_id).order_by(PlacementDrive.created_at.desc()).all()
+    
+    @staticmethod
+    def close_drive(drive_id):
+        """Close a placement drive"""
+        drive = PlacementDrive.query.get(drive_id)
+        
+        if not drive:
+            return False, "Drive not found"
+        
+        drive.status = 'Closed'
+        db.session.commit()
+        return True, f"Drive '{drive.job_title}' closed"
+    
+   
+
+    @staticmethod
+    def get_drive_applications(drive_id):
+        """Get all applications for a drive"""
+        return Application.query.filter_by(drive_id=drive_id).order_by(Application.applied_date.desc()).all()
+
+
+    @staticmethod
+    def get_drive_applications_by_status(drive_id, status):
+        """Get applications for a drive filtered by status"""
+        return Application.query.filter_by(drive_id=drive_id, status=status).order_by(Application.applied_date.desc()).all()
+
+
+    @staticmethod
+    def update_application_status(application_id, new_status):
+        """Update application status (applied/shortlisted/selected/rejected)"""
+        # Validate status
+        if new_status not in ['applied', 'shortlisted', 'selected', 'rejected']:
+            return False, "Invalid status"
+        application = Application.query.get(application_id)
+        if not application:
+            return False, "Application not found"
+        try:
+            application.status = new_status
+            db.session.commit()
+            return True, f"Status updated to '{new_status}'"
+        except Exception as e:
+            db.session.rollback()
+            return False, f"Update failed: {str(e)}"
+    
+    
+        
