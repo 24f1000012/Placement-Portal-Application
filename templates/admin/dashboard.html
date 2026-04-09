@@ -157,7 +157,7 @@
             <div class="card">
                 <h3>Appliactions</h3>
                 <div class="card-number">{{ stats.total_applications if stats else 0 }}</div>
-                <a href="#">Manage Applications</a>
+                <a href="{{ url_for('admin.manageApplications') }}">Manage Applications</a>
             </div>
         </div>
     </div>

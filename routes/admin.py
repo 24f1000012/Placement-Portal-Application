@@ -112,3 +112,17 @@ def rejectDrive(drive_id):
     success, message = AdminService.reject_drive(drive_id)
     flash(message, 'success' if success else 'danger')
     return redirect(url_for("admin.showDrives"))
+
+@admin_bp.route('/applications')
+@admin_required
+def manageApplications():
+    from models import Application
+
+    applications = Application.query\
+        .order_by(Application.applied_date.desc())\
+        .all()
+
+    return render_template(
+        "admin/applications.html",
+        applications=applications
+    )

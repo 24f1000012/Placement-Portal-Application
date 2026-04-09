@@ -44,9 +44,10 @@ def register_student():
         email = request.form.get('email')
         password = request.form.get('password')
         name = request.form.get('name')
-        
+        roll_number = request.form.get('roll_number')
+        resume_file = request.files.get('resume')
         # Call service for business logic
-        success, message = AuthService.register_student(email, password, name)
+        success, message = AuthService.register_student(email, password, name, roll_number, resume_file)
         
         if success:
             flash('Registration successful! Please login.', 'success')
