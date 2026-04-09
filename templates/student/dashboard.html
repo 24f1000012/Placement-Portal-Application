@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,12 +11,12 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: Arial, sans-serif;
             background: #f5f5f5;
         }
-        
+
         .navbar {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -24,68 +25,113 @@
             justify-content: space-between;
             align-items: center;
         }
-        
+
         .navbar h1 {
             font-size: 24px;
         }
-        
+
         .navbar a {
             color: white;
             text-decoration: none;
-            margin-left: 20px;
+            margin-left: 10px;
             padding: 10px 15px;
-            background: rgba(255,255,255,0.2);
+            background: rgba(255, 255, 255, 0.2);
             border-radius: 5px;
         }
-        
+
         .navbar a:hover {
-            background: rgba(255,255,255,0.3);
+            background: rgba(255, 255, 255, 0.3);
         }
-        
+
         .container {
             max-width: 1200px;
             margin: 30px auto;
             padding: 20px;
         }
-        
+
+        .alert {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+        }
+
         .welcome {
             background: white;
             padding: 30px;
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             margin-bottom: 30px;
         }
-        
+
         .welcome h2 {
             color: #667eea;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
-        
+
+        .welcome p {
+            color: #666;
+        }
+
+        /* Profile incomplete warning */
+        .profile-warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+
+        .profile-warning a {
+            color: #667eea;
+            font-weight: bold;
+        }
+
         .dashboard-cards {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 20px;
         }
-        
+
         .card {
             background: white;
-            padding: 20px;
+            padding: 25px 20px;
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             text-align: center;
         }
-        
+
         .card h3 {
             color: #667eea;
             margin-bottom: 10px;
+            font-size: 16px;
         }
-        
+
         .card-number {
-            font-size: 32px;
+            font-size: 36px;
             color: #764ba2;
             margin: 10px 0;
+            font-weight: bold;
         }
-        
+
         .card a {
             display: inline-block;
             background: #667eea;
@@ -94,52 +140,111 @@
             border-radius: 5px;
             text-decoration: none;
             margin-top: 10px;
+            font-size: 14px;
         }
-        
+
         .card a:hover {
             background: #5568d3;
         }
+        .welcome p {
+            font-size: 14px;
+            color: #444;
+        }
     </style>
 </head>
+
 <body>
     <div class="navbar">
         <h1>👨‍🎓 Student Dashboard</h1>
         <div>
+            <a href="{{ url_for('student.browse_jobs') }}">Browse Jobs</a>
+            <a href="{{ url_for('student.my_applications') }}">My Applications</a>
+            <a href="{{ url_for('student.profile') }}">My Profile</a>
             <a href="{{ url_for('auth.logout') }}">Logout</a>
         </div>
     </div>
-    
+
     <div class="container">
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <!-- Welcome Banner -->
         <div class="welcome">
-            <h2>Welcome to Student Dashboard</h2>
-            <p>Browse jobs, apply to companies and track placements.</p>
+            <h2>Welcome, {{ student.name }}!</h2>
+            <p>Browse jobs, apply to companies and track your placement status.</p>
         </div>
-        
+
+        <!-- Nudge to complete profile if fields are missing -->
+        {% if not student.department or not student.cgpa or not student.resume %}
+        <div class="profile-warning">
+            ⚠️ Your profile is incomplete.
+            <a href="{{ url_for('student.profile') }}">Complete your profile</a>
+            to improve your chances — add your department, CGPA, skills, and resume.
+        </div>
+        {% endif %}
+
+        <!-- Stats Cards -->
         <div class="dashboard-cards">
+
             <div class="card">
                 <h3>Available Jobs</h3>
-                <div class="card-number">0</div>
-                <a href="#">Browse Jobs</a>
+                <div class="card-number">{{ stats.available_jobs }}</div>
+                <a href="{{ url_for('student.browse_jobs') }}">Browse Jobs</a>
             </div>
-            
+
             <div class="card">
                 <h3>My Applications</h3>
-                <div class="card-number">0</div>
-                <a href="#">View Applications</a>
+                <div class="card-number">{{ stats.total_applications }}</div>
+                <a href="{{ url_for('student.my_applications') }}">View Applications</a>
             </div>
-            
+
+            <div class="card">
+                <h3>Shortlisted</h3>
+                <div class="card-number">{{ stats.shortlisted }}</div>
+                <a href="{{ url_for('student.my_applications') }}">View Details</a>
+            </div>
+
+            <div class="card">
+                <h3>Selected</h3>
+                <div class="card-number">{{ stats.selected }}</div>
+                <a href="{{ url_for('student.my_applications') }}">View Details</a>
+            </div>
+
             <div class="card">
                 <h3>My Profile</h3>
                 <div class="card-number">👤</div>
-                <a href="#">Edit Profile</a>
+                <a href="{{ url_for('student.profile') }}">Edit Profile</a>
             </div>
-            
-            <div class="card">
-                <h3>Placement Status</h3>
-                <div class="card-number">0</div>
-                <a href="#">View Status</a>
-            </div>
+
         </div>
     </div>
+    <!-- Notifications -->
+    {% if recent_updates %}
+    <div class="welcome">
+        <h2>🔔 Recent Updates</h2>
+
+        {% for app in recent_updates %}
+        <p style="margin-bottom: 8px;">
+            {% if app.status == 'shortlisted' %}
+            🟡 You have been <b>shortlisted</b> for <b>{{ app.drive.job_title }}</b>
+            {% elif app.status == 'selected' %}
+            🟢 You have been <b>selected</b> for <b>{{ app.drive.job_title }}</b> 🎉
+            {% elif app.status == 'rejected' %}
+            🔴 Your application for <b>{{ app.drive.job_title }}</b> was rejected
+            {% else %}
+            🔵 You applied for <b>{{ app.drive.job_title }}</b>
+            {% endif %}
+        </p>
+        {% endfor %}
+    </div>
+    {% endif %}
 </body>
+
 </html>

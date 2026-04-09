@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse Jobs</title>
+
+    <style>
+        body { font-family: Arial; background: #f5f5f5; margin: 0; }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin-left: 10px;
+            padding: 8px 12px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 5px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        .search-box {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+
+        .search-box form {
+            display: flex;
+            gap: 10px;
+        }
+
+        input, select {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        input { flex: 1; }
+
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .jobs {
+            display: grid;
+            gap: 20px;
+        }
+
+        .job-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .job-card h3 {
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .meta {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #eee;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            margin-right: 5px;
+        }
+
+        .apply-btn {
+            margin-top: 10px;
+        }
+
+        .disabled {
+            background: #ccc !important;
+            cursor: not-allowed;
+        }
+
+        .deadline {
+            font-size: 13px;
+            color: #888;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="navbar">
+    <h2>💼 Browse Jobs</h2>
+    <div>
+        <a href="{{ url_for('student.dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('student.my_applications') }}">Applications</a>
+        <a href="{{ url_for('student.profile') }}">Profile</a>
+        <a href="{{ url_for('auth.logout') }}">Logout</a>
+    </div>
+</div>
+
+<div class="container">
+
+    <!-- Search -->
+    <div class="search-box">
+    <form method="GET">
+        <input type="text" name="search_query" placeholder="Search jobs..."
+               value="{{ request.args.get('search_query', '') }}">
+
+        <select name="search_type">
+            <option value="position" {% if request.args.get('search_type') == 'position' %}selected{% endif %}>Position</option>
+            <option value="skills" {% if request.args.get('search_type') == 'skills' %}selected{% endif %}>Skills</option>
+            <option value="company" {% if request.args.get('search_type') == 'company' %}selected{% endif %}>Company</option>
+        </select>
+
+        <button class="btn">Search</button>
+
+        <!-- Clear Button -->
+        <a href="{{ url_for('student.browse_jobs') }}" class="btn clear-btn">
+            Clear
+        </a>
+    </form>
+</div>
+
+    <!-- Jobs -->
+    <div class="jobs">
+
+        {% for drive in drives %}
+        <div class="job-card">
+
+            <h3>{{ drive.job_title }}</h3>
+
+            <div class="meta">
+                🏢 {{ drive.company.name }} | 📍 {{ drive.location }}
+            </div>
+
+            <div>
+                <span class="badge">💰 {{ drive.salary or 'Not specified' }}</span>
+                <span class="badge">🎯 {{ drive.eligibility }}</span>
+            </div>
+
+            <p>
+                {{ drive.job_description[:120] }}...
+            </p>
+
+            {% if drive.application_deadline %}
+                <div class="deadline">
+                    ⏳ Deadline: {{ drive.application_deadline.strftime('%d %b %Y') }}
+                </div>
+            {% endif %}
+
+            <!-- Apply Button -->
+            {% if drive.id in applied_drive_ids %}
+                <button class="btn apply-btn disabled" disabled>
+                    Already Applied
+                </button>
+            {% else %}
+                <form method="POST" action="{{ url_for('student.apply', drive_id=drive.id) }}">
+                    <button class="btn apply-btn">Apply Now</button>
+                </form>
+            {% endif %}
+
+        </div>
+        {% endfor %}
+
+    </div>
+
+</div>
+
+</body>
+</html>

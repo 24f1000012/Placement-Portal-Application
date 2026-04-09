@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Applications</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #f5f5f5;
+            margin: 0;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin-left: 10px;
+            padding: 8px 12px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 5px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .card h3 {
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .meta {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        .status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            display: inline-block;
+            font-weight: bold;
+        }
+
+        .applied { background: #d1ecf1; color: #0c5460; }
+        .shortlisted { background: #fff3cd; color: #856404; }
+        .selected { background: #d4edda; color: #155724; }
+        .rejected { background: #f8d7da; color: #721c24; }
+
+        .empty {
+            text-align: center;
+            color: #777;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="navbar">
+    <h2>📄 My Applications</h2>
+    <div>
+        <a href="{{ url_for('student.dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('student.browse_jobs') }}">Browse Jobs</a>
+        <a href="{{ url_for('student.profile') }}">Profile</a>
+        <a href="{{ url_for('auth.logout') }}">Logout</a>
+    </div>
+</div>
+
+<div class="container">
+
+    {% if applications %}
+
+        {% for app in applications %}
+        <div class="card">
+
+            <h3>{{ app.drive.job_title }}</h3>
+
+            <div class="meta">
+                🏢 {{ app.drive.company.name }}
+            </div>
+
+            <div class="meta">
+                📅 Applied on: {{ app.applied_date.strftime('%d %b %Y') }}
+            </div>
+
+            <!-- Status Badge -->
+            <span class="status {{ app.status }}">
+                {{ app.status | capitalize }}
+            </span>
+
+        </div>
+        {% endfor %}
+
+    {% else %}
+
+        <div class="empty">
+            <h3>No applications yet 😅</h3>
+            <p>Start applying to jobs to see them here.</p>
+            <br>
+            <a href="{{ url_for('student.browse_jobs') }}" style="color:#667eea;">
+                Browse Jobs →
+            </a>
+        </div>
+
+    {% endif %}
+
+</div>
+
+</body>
+</html>
