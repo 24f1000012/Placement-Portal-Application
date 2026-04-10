@@ -5,17 +5,14 @@ class CompanyService:
     
     @staticmethod
     def get_company_by_user_id(user_id):
-        """Get company profile by user_id"""
         return Company.query.filter_by(user_id=user_id).first()
     
     @staticmethod
     def get_company_stats(company_id):
-        """Get statistics for company dashboard"""
         total_drives = PlacementDrive.query.filter_by(company_id=company_id).count()
         pending_drives = PlacementDrive.query.filter_by(company_id=company_id, status='pending').count()
         approved_drives = PlacementDrive.query.filter_by(company_id=company_id, status='approved').count()
         
-        # Count total applications to this company's drives
         drives = PlacementDrive.query.filter_by(company_id=company_id).all()
         total_applications = sum([len(drive.applications) for drive in drives])
         
@@ -28,10 +25,7 @@ class CompanyService:
     
     @staticmethod
     def create_drive(company_id, job_title, job_description, eligibility, salary, location, application_deadline):
-        """
-        Create a new placement drive
-        Returns: (success: bool, message: str)
-        """
+       
         company = Company.query.get(company_id)
         
         if not company:
@@ -65,12 +59,10 @@ class CompanyService:
     
     @staticmethod
     def get_company_drives(company_id):
-        """Get all drives created by a company"""
         return PlacementDrive.query.filter_by(company_id=company_id).order_by(PlacementDrive.created_at.desc()).all()
     
     @staticmethod
     def close_drive(drive_id):
-        """Close a placement drive"""
         drive = PlacementDrive.query.get(drive_id)
         
         if not drive:
@@ -84,20 +76,16 @@ class CompanyService:
 
     @staticmethod
     def get_drive_applications(drive_id):
-        """Get all applications for a drive"""
         return Application.query.filter_by(drive_id=drive_id).order_by(Application.applied_date.desc()).all()
 
 
     @staticmethod
     def get_drive_applications_by_status(drive_id, status):
-        """Get applications for a drive filtered by status"""
         return Application.query.filter_by(drive_id=drive_id, status=status).order_by(Application.applied_date.desc()).all()
 
 
     @staticmethod
     def update_application_status(application_id, new_status):
-        """Update application status (applied/shortlisted/selected/rejected)"""
-        # Validate status
         if new_status not in ['applied', 'shortlisted', 'selected', 'rejected']:
             return False, "Invalid status"
         application = Application.query.get(application_id)

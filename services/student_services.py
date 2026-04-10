@@ -72,7 +72,6 @@ class StudentService:
             elif search_type == 'skills':
                 query = query.filter(PlacementDrive.eligibility.ilike(f'%{search_query}%'))
             elif search_type == 'company':
-                # Join with company table to search by name
                 from models import Company
                 query = query.join(Company).filter(Company.name.ilike(f'%{search_query}%'))
 
@@ -80,7 +79,6 @@ class StudentService:
 
     @staticmethod
     def apply_to_drive(student_id, drive_id):
-        # Check student exists and is not blacklisted
         student = Student.query.get(student_id)
         if not student:
             return False, "Student not found"
@@ -88,7 +86,6 @@ class StudentService:
         if student.is_blacklisted:
             return False, "You are blacklisted and cannot apply."
 
-        # Check drive exists and is approved
         drive = PlacementDrive.query.get(drive_id)
         if not drive:
             return False, "Drive not found"
@@ -96,7 +93,6 @@ class StudentService:
         if drive.status != 'approved':
             return False, "This drive is not open for applications."
 
-        # Check for duplicate application
         existing = Application.query.filter_by(
             student_id=student_id,
             drive_id=drive_id

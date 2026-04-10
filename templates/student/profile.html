@@ -101,7 +101,6 @@
             resize: vertical;
         }
 
-        /* Resume section */
         .resume-section {
             background: #f8f9ff;
             border: 2px dashed #667eea;
@@ -142,7 +141,6 @@
             margin-top: 6px;
         }
 
-        /* Two column grid for some fields */
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -171,7 +169,6 @@
 
         .back-link:hover { text-decoration: underline; }
 
-        /* Read-only info row */
         .info-row {
             display: flex;
             justify-content: space-between;
@@ -201,7 +198,6 @@
 
         <a href="{{ url_for('student.dashboard') }}" class="back-link">← Back to Dashboard</a>
 
-        <!-- Flash Messages -->
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
@@ -210,7 +206,6 @@
             {% endif %}
         {% endwith %}
 
-        <!-- Read-only account info -->
         <div class="card">
             <h2>Account Info</h2>
             <div class="info-row">
@@ -233,7 +228,6 @@
             </div>
         </div>
 
-        <!-- Editable profile form -->
         <div class="card">
             <h2>Edit Profile</h2>
 
@@ -277,7 +271,6 @@
                               placeholder="e.g. Python, Django, SQL, Machine Learning">{{ student.skills or '' }}</textarea>
                 </div>
 
-                <!-- Resume Upload -->
                 <div class="form-group">
                     <label>Resume</label>
                     <div class="resume-section">

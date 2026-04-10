@@ -16,7 +16,6 @@ def create_app():
         db.create_all()
         AuthService.create_default_admin()  # ← Use service
     
-    # Register blueprints
     from routes.auth import auth_bp
     from routes.admin import admin_bp
     from routes.company import company_bp

@@ -41,7 +41,6 @@
         
         <h2>Applications for: {{ drive.job_title }}</h2>
         
-        <!-- Drive Info -->
         <div class="drive-info">
             <strong>Company:</strong> {{ drive.company.name }}<br>
             <strong>Location:</strong> {{ drive.location or 'N/A' }}<br>
@@ -49,7 +48,6 @@
             <strong>Total Applications:</strong> {{ drive.applications|length }}
         </div>
         
-        <!-- Filter Tabs -->
         <div class="filter-tabs">
             <a href="{{ url_for('company.view_applications', drive_id=drive.id) }}" 
                class="{% if not request.args.get('status') %}active{% endif %}">
@@ -73,7 +71,6 @@
             </a>
         </div>
         
-        <!-- Flash Messages -->
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
@@ -82,7 +79,6 @@
             {% endif %}
         {% endwith %}
         
-        <!-- Applications Table -->
         <table>
             <thead>
                 <tr>
@@ -132,7 +128,6 @@
                     </td>
                     <td>
                         {% if application.status == 'applied' %}
-                            <!-- From Applied: Can Shortlist or Reject -->
                             <form method="POST" action="{{ url_for('company.update_application_status', app_id=application.id) }}" style="display:inline;">
                                 <input type="hidden" name="status" value="shortlisted">
                                 <button class="btn btn-warning">Shortlist</button>
@@ -142,7 +137,6 @@
                                 <button class="btn btn-danger">Reject</button>
                             </form>
                         {% elif application.status == 'shortlisted' %}
-                            <!-- From Shortlisted: Can Select or Reject -->
                             <form method="POST" action="{{ url_for('company.update_application_status', app_id=application.id) }}" style="display:inline;">
                                 <input type="hidden" name="status" value="selected">
                                 <button class="btn btn-success">Select</button>

@@ -27,7 +27,6 @@ def create_drive():
         user_id = session.get('user_id')
         company = CompanyService.get_company_by_user_id(user_id)
         
-        # Get form data
         job_title = request.form.get('job_title')
         job_description = request.form.get('job_description')
         eligibility = request.form.get('eligibility')
@@ -35,7 +34,6 @@ def create_drive():
         location = request.form.get('location')
         deadline_str = request.form.get('application_deadline')
         
-        # Convert deadline string to datetime
         deadline = None
         if deadline_str:
             try:
@@ -44,7 +42,6 @@ def create_drive():
                 flash('Invalid deadline format', 'danger')
                 return render_template('company/create_drive.html')
         
-        # Call service
         success, message = CompanyService.create_drive(
             company.id, job_title, job_description,
             eligibility, salary, location, deadline
@@ -81,17 +78,14 @@ def view_applications(drive_id):
     user_id = session.get('user_id')
     company = CompanyService.get_company_by_user_id(user_id)
     
-    # Get the drive (verify it belongs to this company)
     drive = PlacementDrive.query.get(drive_id)
     
     if not drive or drive.company_id != company.id:
         flash('Drive not found', 'danger')
         return redirect(url_for('company.dashboard'))
     
-    # Get status filter from query params
     status_filter = request.args.get('status')
     
-    # Get all applications or filter by status
     if status_filter:
         applications = CompanyService.get_drive_applications_by_status(drive_id, status_filter)
     else:
@@ -107,7 +101,6 @@ def update_application_status(app_id):
     success, message = CompanyService.update_application_status(app_id, new_status)
     flash(message, 'success' if success else 'danger')
     
-    # Redirect back to applications list
     application = Application.query.get(app_id)
     return redirect(url_for('company.view_applications', drive_id=application.drive_id))
 

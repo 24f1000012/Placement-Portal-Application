@@ -38,7 +38,6 @@
         
         <h2>Manage Placement Drives</h2>
         
-        <!-- Filter Tabs -->
         <div class="filter-tabs">
             <a href="{{ url_for('admin.showDrives') }}" class="{% if not request.args.get('status') %}active{% endif %}">All Drives</a>
             <a href="{{ url_for('admin.showDrives', status='pending') }}" class="{% if request.args.get('status') == 'pending' %}active{% endif %}">Pending</a>
@@ -47,7 +46,6 @@
             <a href="{{ url_for('admin.showDrives', status='closed') }}" class="{% if request.args.get('status') == 'closed' %}active{% endif %}">Closed</a>
         </div>
         
-        <!-- Flash Messages -->
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
@@ -100,12 +98,10 @@
                     </td>
                     <td>
                         {% if drive.status == "pending" %}
-                            <!-- Approve Button -->
                             <form method="POST" action="{{ url_for('admin.approveDrive', drive_id=drive.id) }}" style="display:inline;">
                                 <button class="btn btn-success">Approve</button>
                             </form>
                             
-                            <!-- Reject Button -->
                             <form method="POST" action="{{ url_for('admin.rejectDrive', drive_id=drive.id) }}" style="display:inline;">
                                 <button class="btn btn-danger">Reject</button>
                             </form>

@@ -2,7 +2,6 @@ from flask import Blueprint, render_template, session, redirect, url_for, flash,
 from utils.decorators import admin_required
 from services.admin_service import AdminService
 
-# Create blueprint
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
 
 @admin_bp.route('/dashboard')
@@ -20,19 +19,16 @@ def showCompanies():
     companies = []
     
     if search_query:
-        # Search based on type
         if search_type == 'name':
             success, result = AdminService.get_company_by_name(search_query)
             companies = result if success else []
         elif search_type == 'industry':
             success, result = AdminService.get_company_by_industry(search_query)
-            # get_company_by_industry returns a list already
             companies = result if success else []
         
         if not companies:
             flash(f'No companies found for "{search_query}"', 'warning')
     else:
-        # No search - show all companies
         companies = AdminService.get_all_companies()
     
     return render_template("admin/companies.html", companies=companies)
@@ -91,16 +87,13 @@ def unblacklistStudent(student_id):
 @admin_bp.route('/drives')  
 @admin_required
 def showDrives():
-    """View all placement drives"""
-    # Optional: filter by status using query param
-    status = request.args.get('status')  # ?status=pending
+    status = request.args.get('status')
     drives = AdminService.get_all_drives(status)
     return render_template("admin/drives.html", drives=drives)
 
 @admin_bp.route('/drive/<int:drive_id>/approve', methods=['POST'])  
 @admin_required
 def approveDrive(drive_id):
-    """Approve a placement drive"""
     success, message = AdminService.approve_drive(drive_id)
     flash(message, 'success' if success else 'danger')
     return redirect(url_for("admin.showDrives"))
@@ -108,7 +101,6 @@ def approveDrive(drive_id):
 @admin_bp.route('/drive/<int:drive_id>/reject', methods=['POST'])  
 @admin_required
 def rejectDrive(drive_id):
-    """Reject a placement drive"""
     success, message = AdminService.reject_drive(drive_id)
     flash(message, 'success' if success else 'danger')
     return redirect(url_for("admin.showDrives"))

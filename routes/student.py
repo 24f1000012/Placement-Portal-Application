@@ -1,4 +1,3 @@
-# routes/student.py
 from flask import Blueprint, render_template, session, redirect, url_for, flash, request
 from utils.decorators import student_required
 from services.student_services import StudentService
@@ -76,8 +75,6 @@ def browse_jobs():
     if search_query and not drives:
         flash(f'No jobs found for "{search_query}"', 'warning')
 
-    # Get the list of drive IDs the student has already applied to
-    # so we can disable the Apply button in the template
     from models import Application
     applied_drive_ids = [
         app.drive_id for app in
